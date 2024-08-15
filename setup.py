@@ -10,7 +10,7 @@ setup(
     # 包名
     name="codypy",
     # 版本号
-    version="0.1.2",
+    version="1.0.0",
     # 简短描述
     description="一个Python包装器,通过TCP/stdio连接使用JSON-RPC协议与Sourcegraph Cody的Cody-Agent服务器建立连接。",
     # 长描述(从README.md读取)
@@ -18,11 +18,11 @@ setup(
     # 长描述的内容类型
     long_description_content_type="text/markdown",
     # 作者
-    author="PriNova",
+    author="PriNova, pama1234",
     # 作者邮箱
-    author_email="info@prinova.de",
+    author_email="info@prinova.de, pama1234@163.com",
     # 项目URL
-    url="https://github.com/PriNova/codypy",
+    url="https://github.com/fabric-of-tetrahedron/codypy",
     # 自动查找包
     packages=find_packages(),
     # 定义命令行入口点
