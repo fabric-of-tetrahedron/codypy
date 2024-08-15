@@ -160,7 +160,7 @@ class CodyServer:
             retry_attempts: int = 5
             # TODO: 考虑使这些参数可配置
             host: str = "localhost"
-            port: int = 3113
+            port: int = 31132
             for retry in range(retry_attempts):
                 try:
                     (self._reader, self._writer) = await asyncio.open_connection(

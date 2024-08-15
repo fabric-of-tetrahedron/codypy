@@ -62,16 +62,16 @@ async def main():
     
     # 设置聊天模型为Claude3Sonnet
     logger.info("--- 设置模型 ---")
-    await cody_agent.set_model(model=Models.Claude3Sonnet)
+    await cody_agent.set_model(model=Models.Gemini15Flash)
     
-    # 设置仓库上下文
-    logger.info("--- 设置上下文仓库 ---")
-    await cody_agent.set_context_repo(repos=["github.com/PriNova/codypy"])
+    # # 设置仓库上下文（仅限企业版用户）
+    # logger.info("--- 设置上下文仓库 ---")
+    # await cody_agent.set_context_repo(repos=["github.com/fabric-of-tetrahedron/codypy"])
     
     # 设置要使用的指定上下文文件
     context_file = append_paths(
         "./main.py",
-        "./codypy/logger.py",
+        "./codypy/logger.py", # 这个文件不存在
     )
     
     # 开始交互式聊天循环

@@ -22,13 +22,13 @@ class Configs:
 
     属性:
         BINARY_PATH (str): 二进制文件的路径，默认为空字符串。
-        SERVER_ADDRESS (tuple): 服务器地址，包含主机名和端口号，默认为 ("localhost", 3113)。
+        SERVER_ADDRESS (tuple): 服务器地址，包含主机名和端口号，默认为 ("localhost", 31132)。
         WORKSPACE (str): 工作空间路径，默认为空字符串。
         USE_TCP (bool): 是否使用 TCP 连接，默认为 False。
         IS_DEBUGGING (bool): 是否处于调试模式，默认为 False。
     """
     BINARY_PATH: str = ""
-    SERVER_ADDRESS = ("localhost", 3113)
+    SERVER_ADDRESS = ("localhost", 31132)
     WORKSPACE: str = ""
     USE_TCP: bool = False
     IS_DEBUGGING: bool = False
