@@ -1,6 +1,6 @@
 [project]
 name = "codypy"
-version = "0.1.2"
+version = "1.0.0"
 description = "Python wrapper binding for Cody Agent"
 authors = [{ name = "PriNova", email = "info@prinova.de" },{ name = "pama1234", email = "pama1234@163.com" }]
 readme = "README.md"

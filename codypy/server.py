@@ -4,51 +4,13 @@ import os
 from asyncio.subprocess import Process
 
 from codypy.exceptions import (
-    AgentBinaryDownloadError,
     AgentBinaryNotFoundError,
     ServerTCPConnectionError,
 )
 from codypy.messaging import _send_jsonrpc_request
-from codypy.utils import (
-    _check_for_binary_file,
-    _download_binary_to_path,
-    _format_binary_name,
-)
 
 # 设置日志记录器
 logger = logging.getLogger(__name__)
-
-
-async def _get_cody_binary(binary_path: str, version: str) -> str:
-    """
-    获取Cody代理二进制文件的路径。
-
-    参数:
-    binary_path (str): 二进制文件的目标路径
-    version (str): Cody代理的版本
-
-    返回:
-    str: Cody代理二进制文件的完整路径
-
-    异常:
-    AgentBinaryDownloadError: 如果下载二进制文件失败
-    """
-    # 检查指定路径是否存在代理二进制文件
-    has_agent_binary = await _check_for_binary_file(binary_path, "cody-agent", version)
-    if not has_agent_binary:
-        logger.warning(
-            "指定路径下不存在Cody代理二进制文件: %s", binary_path
-        )
-        logger.warning("开始下载Cody代理二进制文件")
-        # 下载二进制文件到指定路径
-        is_completed = await _download_binary_to_path(
-            binary_path, "cody-agent", version
-        )
-        if not is_completed:
-            raise AgentBinaryDownloadError("下载Cody代理二进制文件失败")
-    
-    # 返回完整的二进制文件路径
-    return os.path.join(binary_path, await _format_binary_name("cody-agent", version))
 
 
 class CodyServer:
