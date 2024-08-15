@@ -21,7 +21,7 @@ logger = logging.getLogger(__name__)
 
 async def main():
     """
-    主函数：初始化Cody服务器和代理，并运行交互式聊天循环。
+    主函数：（用于功能演示）初始化Cody服务器和代理，并运行交互式聊天循环。
     """
     # 设置全局日志记录器
     logging.basicConfig(
