@@ -15,81 +15,132 @@ from codypy.utils import (
     _format_binary_name,
 )
 
+# 设置日志记录器
 logger = logging.getLogger(__name__)
 
 
 async def _get_cody_binary(binary_path: str, version: str) -> str:
+    """
+    获取Cody代理二进制文件的路径。
+
+    参数:
+    binary_path (str): 二进制文件的目标路径
+    version (str): Cody代理的版本
+
+    返回:
+    str: Cody代理二进制文件的完整路径
+
+    异常:
+    AgentBinaryDownloadError: 如果下载二进制文件失败
+    """
+    # 检查指定路径是否存在代理二进制文件
     has_agent_binary = await _check_for_binary_file(binary_path, "cody-agent", version)
     if not has_agent_binary:
         logger.warning(
-            "Cody Agent binary does not exist at the specified path: %s", binary_path
+            "指定路径下不存在Cody代理二进制文件: %s", binary_path
         )
-        logger.warning("Start downloading the Cody Agent binary")
+        logger.warning("开始下载Cody代理二进制文件")
+        # 下载二进制文件到指定路径
         is_completed = await _download_binary_to_path(
             binary_path, "cody-agent", version
         )
         if not is_completed:
-            raise AgentBinaryDownloadError("Failed to download the Cody Agent binary")
-
+            raise AgentBinaryDownloadError("下载Cody代理二进制文件失败")
+    
+    # 返回完整的二进制文件路径
     return os.path.join(binary_path, await _format_binary_name("cody-agent", version))
 
 
 class CodyServer:
+    """
+    Cody服务器类，用于管理与Cody代理的连接和通信。
+    """
+    
     @classmethod
     async def init(
-        cls,
-        binary_path: str,
-        version: str,
-        use_tcp: bool = False,  # default because of ca-certificate verification
+            cls,
+            binary_path: str,
+            version: str,
+            use_tcp: bool = False,  # 默认使用stdio，因为ca-certificate验证的原因
     ) -> "CodyServer":
-        cody_binary = await _get_cody_binary(binary_path, version)
+        """
+        初始化CodyServer实例的类方法。
+
+        参数:
+        binary_path (str): 二进制文件的路径
+        version (str): Cody代理的版本
+        use_tcp (bool): 是否使用TCP连接，默认为False
+
+        返回:
+        CodyServer: 初始化后的CodyServer实例
+        """
+        # cody_binary = await _get_cody_binary(binary_path, version)
+        cody_binary = binary_path
         cody_server = cls(cody_binary, use_tcp)
         await cody_server._create_server_connection()
         return cody_server
-
+    
     def __init__(self, cody_binary: str, use_tcp: bool) -> None:
+        """
+        初始化CodyServer实例。
+
+        参数:
+        cody_binary (str): Cody代理二进制文件的路径
+        use_tcp (bool): 是否使用TCP连接
+        """
         self.cody_binary = cody_binary
         self.use_tcp = use_tcp
         self._process: Process | None = None
         self._reader: asyncio.StreamReader | None = None
         self._writer: asyncio.StreamWriter | None = None
-
+    
     async def _create_server_connection(
-        self, test_against_node_source: bool = False
+            self, test_against_node_source: bool = False
     ) -> None:
         """
-        Asynchronously creates a connection to the Cody server.
-        If `cody_binary` is an empty string, it prints an error message and exits the program.
-        Sets the `CODY_AGENT_DEBUG_REMOTE` and `CODY_DEBUG` environment variables based on the `use_tcp` and `is_debugging` flags, respectively.
-        Creates a subprocess to run the Cody agent, either by executing the `bin/agent` binary or running the `index.js` file specified by `binary_path`.
-        Depending on the `use_tcp` flag, it either connects to the agent using stdio or opens a TCP connection to `localhost:3113`.
-        If the TCP connection fails after 5 retries, it prints an error message and exits the program.
-        Returns the reader and writer streams for the agent connection.
+        异步创建与Cody服务器的连接。
+
+        如果`cody_binary`为空字符串，则抛出异常。
+        根据`use_tcp`和调试标志设置环境变量。
+        创建子进程运行Cody代理，可以是执行二进制文件或运行指定的index.js文件。
+        根据`use_tcp`标志，使用stdio或TCP连接到代理。
+        如果TCP连接失败（重试5次后），抛出异常。
+
+        参数:
+        test_against_node_source (bool): 是否使用Node源代码进行测试，默认为False
+
+        异常:
+        AgentBinaryNotFoundError: 如果Cody代理二进制文件路径为空
+        ServerTCPConnectionError: 如果TCP连接失败
         """
         if not test_against_node_source and self.cody_binary == "":
             raise AgentBinaryNotFoundError(
-                "Cody Agent binary path is empty. You need to specify the "
-                "BINARY_PATH to an absolute path to the agent binary or to "
-                "the index.js file."
+                "Cody代理二进制文件路径为空。您需要指定BINARY_PATH为代理二进制文件"
+                "或index.js文件的绝对路径。"
             )
-
+        
+        # 设置调试相关的环境变量
         debug = logger.getEffectiveLevel() == logging.DEBUG
         os.environ["CODY_AGENT_DEBUG_REMOTE"] = str(self.use_tcp).lower()
         os.environ["CODY_DEBUG"] = str(debug).lower()
-
+        
+        # 准备启动参数
         args = []
         binary = ""
-        if test_against_node_source:
-            binary = "node"
-            args.extend(
-                (
-                    "--enable-source-maps",
-                    "/home/prinova/CodeProjects/cody/agent/dist/index.js",
-                )
-            )
-        else:
-            binary = self.cody_binary
-        args.append("jsonrpc")
+        # if test_against_node_source:
+        #     binary = "node"
+        #     args.extend(
+        #         (
+        #             "--enable-source-maps",
+        #             "/home/prinova/CodeProjects/cody/agent/dist/index.js",
+        #         )
+        #     )
+        # else:
+        binary = self.cody_binary
+        args.append("api")
+        args.append("jsonrpc-stdio")
+        
+        # 创建子进程
         self._process: Process = await asyncio.create_subprocess_exec(
             binary,
             *args,
@@ -97,16 +148,17 @@ class CodyServer:
             stdout=asyncio.subprocess.PIPE,
             env=os.environ,
         )
-        logger.info("Cody agent process with PID %d created", self._process.pid)
+        logger.info("创建了PID为%d的Cody代理进程", self._process.pid)
         self._reader = self._process.stdout
         self._writer = self._process.stdin
-
+        
         if not self.use_tcp:
-            logger.info("Created a stdio connection to the Cody agent")
+            logger.info("已创建与Cody代理的stdio连接")
         else:
+            # TCP连接逻辑
             retry: int = 0
             retry_attempts: int = 5
-            # TODO: Consider making this configurable
+            # TODO: 考虑使这些参数可配置
             host: str = "localhost"
             port: int = 3113
             for retry in range(retry_attempts):
@@ -116,40 +168,40 @@ class CodyServer:
                     )
                     if self._reader is not None and self._writer is not None:
                         logger.info(
-                            "Created a TCP connection to the Cody agent (%s:%s)",
+                            "已创建与Cody代理的TCP连接 (%s:%s)",
                             host,
                             port,
                         )
                         break
-                    # return reader, writer, process
                 except ConnectionRefusedError as exc:
-                    # TODO: This is not the nicest way to do retry but it
-                    # keeps the logging sane. Consider refactoring.
-                    await asyncio.sleep(1)  # Retry after a short delay
+                    # TODO: 这不是最优雅的重试方式，但它保持了日志的简洁。考虑重构。
+                    await asyncio.sleep(1)  # 短暂延迟后重试
                     retry += 1
                     if retry == retry_attempts:
                         logger.debug(
-                            "Exhausted %d retry attempts while trying to connect to %s:%s",
+                            "尝试连接到%s:%s时耗尽了%d次重试机会",
                             retry_attempts,
                             host,
                             port,
                         )
                         raise ServerTCPConnectionError(
-                            "Could not connect to server: %s:%s", host, port
+                            "无法连接到服务器: %s:%s", host, port
                         ) from exc
                     else:
                         logger.debug(
-                            "Connection to %s:%s failed, retrying (%d)",
+                            "连接到%s:%s失败，正在重试 (%d)",
                             host,
                             port,
                             retry,
                         )
-
+    
     async def cleanup_server(self):
         """
-        Cleans up the server connection by sending a "shutdown" request to the server and terminating the server process if it is still running.
+        清理服务器连接。
+
+        向服务器发送"shutdown"请求，并在服务器进程仍在运行时终止它。
         """
-        logger.info("Cleaning up Server...")
+        logger.info("正在清理服务器...")
         await _send_jsonrpc_request(self._writer, "shutdown", None)
         if self._process.returncode is None:
             self._process.terminate()

@@ -10,93 +10,93 @@ from codypy.config import BLUE, GREEN, RESET
 from codypy.context import append_paths
 from codypy.server import CodyServer
 
+# 加载环境变量
 load_dotenv()
 SRC_ACCESS_TOKEN = os.getenv("SRC_ACCESS_TOKEN")
 BINARY_PATH = os.getenv("BINARY_PATH")
 
-
+# 设置日志记录器
 logger = logging.getLogger(__name__)
 
 
 async def main():
-    # set the global logger
+    """
+    主函数：初始化Cody服务器和代理，并运行交互式聊天循环。
+    """
+    # 设置全局日志记录器
     logging.basicConfig(
         level=logging.INFO,
         format="%(asctime)s - %(name)s - %(levelname)s - %(message)s",
     )
-
-    # Create a CodyServer instance and initialize it
-    # with the specified binary path and debugging mode.
-    logger.info("--- Create Server Connection ---")
+    
+    # 创建CodyServer实例并使用指定的二进制路径和调试模式初始化
+    logger.info("--- 创建服务器连接 ---")
     cody_server: CodyServer = await CodyServer.init(
         binary_path=BINARY_PATH,
         version="0.0.5b",
     )
-
-    # Create an AgentSpecs instance with the specified workspace root URI
-    # and extension configuration.
+    
+    # 创建AgentSpecs实例，指定工作空间根URI和扩展配置
     agent_specs = AgentSpecs(
-        workspaceRootUri="/home/prinova/CodeProjects/CodyAgentPy",
+        workspaceRootUri="./",
         extensionConfiguration={
             "accessToken": SRC_ACCESS_TOKEN,
-            "codebase": "",  # "/home/prinova/CodeProjects/codypy",  # github.com/sourcegraph/cody",
+            "codebase": "",  # 可以指定代码库路径，例如 "/home/prinova/CodeProjects/codypy"
             "customConfiguration": {},
         },
     )
-
-    # Initialize the CodyAgent with the specified agent_specs and debug_method_map.
-    logger.info("--- Initialize Agent ---")
+    
+    # 使用指定的agent_specs初始化CodyAgent
+    logger.info("--- 初始化代理 ---")
     cody_agent: CodyAgent = CodyAgent(cody_server=cody_server, agent_specs=agent_specs)
     await cody_agent.initialize_agent()
-
-    # Retrieve and print the available chat models
-    logger.info("--- Retrieve Chat Models ---")
+    
+    # 获取并打印可用的聊天模型
+    logger.info("--- 获取聊天模型 ---")
     models = await cody_agent.get_models(model_type="chat")
-    logger.info("Available models: %s", models)
-    # Create a new chat with the CodyAgent
-    logger.info("--- Create new chat ---")
+    logger.info("可用模型: %s", models)
+    
+    # 创建新的聊天会话
+    logger.info("--- 创建新聊天 ---")
     await cody_agent.new_chat()
-
-    # Set the chat model to Claude3Haiku
-    logger.info("--- Set Model ---")
+    
+    # 设置聊天模型为Claude3Sonnet
+    logger.info("--- 设置模型 ---")
     await cody_agent.set_model(model=Models.Claude3Sonnet)
-
-    # Set the repository context
-    logger.info("--- Set context repo ---")
+    
+    # 设置仓库上下文
+    logger.info("--- 设置上下文仓库 ---")
     await cody_agent.set_context_repo(repos=["github.com/PriNova/codypy"])
-
-    # Send a message to the chat and print the response until the user enters '/quit'.
-    logger.info("--- Send message (short) ---")
-
-    # set specified context files to be used by Cody of your choice in the workspace
+    
+    # 设置要使用的指定上下文文件
     context_file = append_paths(
-        "/home/prinova/CodeProjects/CodyAgentPy/main.py",
-        "/home/prinova/CodeProjects/CodyAgentPy/codypy/logger.py",
+        "./main.py",
+        "./codypy/logger.py",
     )
-
+    
+    # 开始交互式聊天循环
+    logger.info("--- 发送消息（简短） ---")
     while True:
-        message: str = input(f"{GREEN}Human:{RESET} ")
+        message: str = input(f"{GREEN}人类:{RESET} ")
         response, context_files_response = await cody_agent.chat(
             message=message,
-            # Set to 'True' if you wish Cody to be codebase aware
-            enhanced_context=False,
-            # Set to 'True' if the inferred context files with optional ranges
-            # should be returned else an empty list
-            show_context_files=True,
-            # Set to the list of files you want to have context for. See the example above
-            context_files=context_file,
+            enhanced_context=False,  # 设置为True以启用代码库感知
+            show_context_files=True,  # 设置为True以返回推断的上下文文件（可选范围）
+            context_files=context_file,  # 设置要提供上下文的文件列表
         )
         if response == "":
             break
-        print(f"{BLUE}Assistant{RESET}: {response}\n")
-        logger.info("--- Context Files ---")
+        print(f"{BLUE}助手{RESET}: {response}\n")
+        
+        # 打印上下文文件信息
+        logger.info("--- 上下文文件 ---")
         if context_files_response:
             for context in context_files_response:
-                logger.info("file: %s", context)
+                logger.info("文件: %s", context)
         else:
-            logger.info("No context file")
-
-    # Cleanup the server and return None
+            logger.info("无上下文文件")
+    
+    # 清理服务器并返回None
     await cody_server.cleanup_server()
     return None
 

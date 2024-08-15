@@ -7,9 +7,11 @@ import pydantic_core as pd
 
 from codypy.config import Configs
 
+# 设置日志记录器
 logger = logging.getLogger(__name__)
 stream_logger = logging.getLogger(f"{__name__}.stream")
 
+# 全局消息ID，用于标识每个JSON-RPC请求
 MESSAGE_ID = 1
 
 
@@ -17,16 +19,15 @@ async def _send_jsonrpc_request(
     writer: asyncio.StreamWriter, method: str, params: Dict[str, Any] | None
 ) -> None:
     """
-    Sends a JSON-RPC request to the server.
+    向服务器发送JSON-RPC请求。
 
-    Args:
-        writer: The asyncio StreamWriter to use for sending the request.
-        method: The JSON-RPC method to call.
-        params: The parameters to pass to the JSON-RPC method,
-                or None if no parameters are required.
+    参数:
+        writer: 用于发送请求的asyncio StreamWriter。
+        method: 要调用的JSON-RPC方法。
+        params: 传递给JSON-RPC方法的参数，如果不需要参数则为None。
 
-    Raises:
-        None
+    异常:
+        无
     """
     global MESSAGE_ID
     message: Dict[str, Any] = {
@@ -36,14 +37,14 @@ async def _send_jsonrpc_request(
         "params": params,
     }
 
-    # Convert the message to JSON string
+    # 将消息转换为JSON字符串
     json_message: bytes = pd.to_json(message)
     content_length: int = len(json_message)
     content_message: bytes = (
         f"Content-Length: {content_length}\r\n\r\n".encode() + json_message
     )
 
-    # Send the JSON-RPC message to the server
+    # 向服务器发送JSON-RPC消息
     writer.write(content_message)
     await writer.drain()
     MESSAGE_ID += 1
@@ -51,16 +52,16 @@ async def _send_jsonrpc_request(
 
 async def _receive_jsonrpc_messages(reader: asyncio.StreamReader) -> str:
     """
-    Reads a JSON-RPC message from the provided `asyncio.StreamReader`.
+    从提供的`asyncio.StreamReader`中读取JSON-RPC消息。
 
-    Args:
-        reader: The `asyncio.StreamReader` to read the message from.
+    参数:
+        reader: 用于读取消息的`asyncio.StreamReader`。
 
-    Returns:
-        The JSON-RPC message as a string.
+    返回:
+        JSON-RPC消息字符串。
 
-    Raises:
-        asyncio.TimeoutError: If the message cannot be read within the 5 second timeout.
+    异常:
+        asyncio.TimeoutError: 如果在5秒超时内无法读取消息。
     """
     headers: bytes = await asyncio.wait_for(reader.readuntil(b"\r\n\r\n"), timeout=5.0)
     content_length: int = int(
@@ -77,19 +78,18 @@ async def _handle_server_respones(
     reader: asyncio.StreamReader,
 ) -> AsyncGenerator[Dict[str, Any], Any]:
     """
-    Asynchronously handles server responses by reading JSON-RPC messages
-    from the provided `asyncio.StreamReader`.
+    异步处理服务器响应，从提供的`asyncio.StreamReader`中读取JSON-RPC消息。
 
-    This function yields each JSON-RPC response as a dictionary, until a timeout occurs.
+    此函数会产生每个JSON-RPC响应作为字典，直到发生超时。
 
-    Args:
-        reader: The `asyncio.StreamReader` to read the JSON-RPC messages from.
+    参数:
+        reader: 用于读取JSON-RPC消息的`asyncio.StreamReader`。
 
-    Yields:
-        A dictionary representing the JSON-RPC response.
+    产生:
+        表示JSON-RPC响应的字典。
 
-    Raises:
-        asyncio.TimeoutError: If a JSON-RPC message cannot be read within the 5 second timeout.
+    异常:
+        asyncio.TimeoutError: 如果在5秒超时内无法读取JSON-RPC消息。
     """
     try:
         while True:
@@ -101,39 +101,39 @@ async def _handle_server_respones(
 
 async def _has_method(json_response: Dict[str, Any]) -> bool:
     """
-    Checks if the provided JSON response contains a "method" key.
+    检查提供的JSON响应是否包含"method"键。
 
-    Args:
-        json_response (Dict[str, Any]): The JSON response to check.
+    参数:
+        json_response (Dict[str, Any]): 要检查的JSON响应。
 
-    Returns:
-        bool: True if the JSON response contains a "method" key, False otherwise.
+    返回:
+        bool: 如果JSON响应包含"method"键则返回True，否则返回False。
     """
     return "method" in json_response
 
 
 async def _has_result(json_response: Dict[str, Any]) -> bool:
     """
-    Checks if the provided JSON response contains a "result" key.
+    检查提供的JSON响应是否包含"result"键。
 
-    Args:
-        json_response (Dict[str, Any]): The JSON response to check.
+    参数:
+        json_response (Dict[str, Any]): 要检查的JSON响应。
 
-    Returns:
-        bool: True if the JSON response contains a "result" key, False otherwise.
+    返回:
+        bool: 如果JSON响应包含"result"键则返回True，否则返回False。
     """
     return "result" in json_response
 
 
 async def _extraxt_result(json_response: Dict[str, Any]) -> Dict[str, Any] | None:
     """
-    Attempts to extract the "result" key from the provided JSON response dictionary.
+    尝试从提供的JSON响应字典中提取"result"键的值。
 
-    Args:
-        json_response (Dict[str, Any]): The JSON response dictionary to extract the "result" from.
+    参数:
+        json_response (Dict[str, Any]): 要提取"result"的JSON响应字典。
 
-    Returns:
-        Dict[str, Any] | None: The value of the "result" key if it exists, otherwise None.
+    返回:
+        Dict[str, Any] | None: 如果存在"result"键，则返回其值，否则返回None。
     """
     try:
         return json_response["result"]
@@ -143,13 +143,13 @@ async def _extraxt_result(json_response: Dict[str, Any]) -> Dict[str, Any] | Non
 
 async def _extraxt_method(json_response) -> Dict[str, Any] | None:
     """
-    Attempts to extract the "method" key from the provided JSON response dictionary.
+    尝试从提供的JSON响应字典中提取"method"键的值。
 
-    Args:
-        json_response (Dict[str, Any]): The JSON response dictionary to extract the "method" from.
+    参数:
+        json_response (Dict[str, Any]): 要提取"method"的JSON响应字典。
 
-    Returns:
-        Dict[str, Any] | None: The value of the "method" key if it exists, otherwise None.
+    返回:
+        Dict[str, Any] | None: 如果存在"method"键，则返回其值，否则返回None。
     """
     try:
         return json_response["method"]
@@ -157,23 +157,23 @@ async def _extraxt_method(json_response) -> Dict[str, Any] | None:
         return None
 
 
-# TODO: Remove unused function
+# TODO: 移除未使用的函数
 async def _handle_json_data(json_data, configs: Configs) -> Dict[str, Any] | None:
     """
-    Handles the processing of JSON data received from a remote source.
+    处理从远程源接收的JSON数据。
 
-    Args:
-        json_data (str): The JSON data to be processed.
-        configs (Configs): The configuration settings to use during processing.
+    参数:
+        json_data (str): 要处理的JSON数据。
+        configs (Configs): 处理过程中使用的配置设置。
 
-    Returns:
-        Dict[str, Any] | None: The extracted "method" or "result" from the JSON response,
-        or the original JSON response if neither "method" nor "result" is present.
+    返回:
+        Dict[str, Any] | None: 从JSON响应中提取的"method"或"result"，
+        如果两者都不存在，则返回原始JSON响应。
     """
     json_response: Dict[str, Any] = pd.from_json(json_data)
     if await _has_method(json_response):
         logger.debug(
-            "Method: %s, params: %s",
+            "方法: %s, 参数: %s",
             json_response["method"],
             json_response.get("params"),
         )
@@ -181,7 +181,7 @@ async def _handle_json_data(json_data, configs: Configs) -> Dict[str, Any] | Non
 
     if await _has_result(json_response):
         result = await _extraxt_result(json_response)
-        logger.debug("Result: %s", result)
+        logger.debug("结果: %s", result)
         return result
 
     return json_response
@@ -192,17 +192,17 @@ async def _show_last_message(
     show_context_files: bool,
 ) -> Tuple[str, str, list[str]]:
     """
-    Retrieves the speaker and text of the last message in a transcript.
+    检索消息记录中最后一条消息的发言者和文本。
 
-    Args:
-        messages (Dict[str, Any]): A dictionary containing the message history.
+    参数:
+        messages (Dict[str, Any]): 包含消息历史的字典。
 
-    Returns:
-        Tuple[str, str]: A tuple containing the speaker and text of the last message.
+    返回:
+        Tuple[str, str]: 包含最后一条消息的发言者和文本的元组。
     """
     if messages is not None and messages["type"] == "transcript":
         last_message = messages["messages"][-1:][0]
-        logger.debug("Last message: %s", last_message)
+        logger.debug("最后一条消息: %s", last_message)
         speaker: str = last_message["speaker"]
         text: str = last_message["text"]
 
@@ -230,16 +230,15 @@ async def _show_last_message(
 
 async def _show_messages(message, configs: Configs) -> None:
     """
-    Prints the speaker and text of each message in a transcript.
+    打印消息记录中每条消息的发言者和文本。
 
-    Args:
-        message (dict): A dictionary containing the message history, with a "type" key set to
-                        "transcript" and a "messages" key containing
-                        a list of message dictionaries.
-        configs (Configs): The configuration settings to use during processing.
+    参数:
+        message (dict): 包含消息历史的字典，其中"type"键设置为"transcript"，
+                        "messages"键包含消息字典列表。
+        configs (Configs): 处理过程中使用的配置设置。
 
-    Returns:
-        None
+    返回:
+        无
     """
     if message["type"] == "transcript":
         for message in message["messages"]:
@@ -248,24 +247,24 @@ async def _show_messages(message, configs: Configs) -> None:
 
 async def request_response(method_name: str, params, reader, writer) -> Any:
     """
-    Sends a JSON-RPC request to a server and handles the response.
+    向服务器发送JSON-RPC请求并处理响应。
 
-    Args:
-        method_name (str): The name of the JSON-RPC method to call.
-        params: The parameters to pass to the JSON-RPC method.
-        reader (asyncio.StreamReader): The reader stream to use for receiving responses.
-        writer (asyncio.StreamWriter): The writer stream to use for sending requests.
+    参数:
+        method_name (str): 要调用的JSON-RPC方法的名称。
+        params: 传递给JSON-RPC方法的参数。
+        reader (asyncio.StreamReader): 用于接收响应的读取器流。
+        writer (asyncio.StreamWriter): 用于发送请求的写入器流。
 
-    Returns:
-        Any: The result of the JSON-RPC request, or None if no result is available.
+    返回:
+        Any: JSON-RPC请求的结果，如果没有可用结果则返回None。
     """
-    logger.debug("Sending command: %s - %s", method_name, params)
+    logger.debug("发送命令: %s - %s", method_name, params)
     await _send_jsonrpc_request(writer, method_name, params)
     async for response in _handle_server_respones(reader):
         if response.get("params", {}).get("isMessageInProgress"):
-            stream_logger.debug("InProgress response: %s", response)
+            stream_logger.debug("进行中的响应: %s", response)
         if response and await _has_result(response):
-            logger.debug("Response: %s", response)
+            logger.debug("响应: %s", response)
             return response["result"]
 
     return None

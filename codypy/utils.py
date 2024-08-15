@@ -11,14 +11,15 @@ from codypy.messaging import request_response
 
 async def _get_platform_arch() -> str | None:
     """
-    Recognizes the operating system and architecture of the current system.
+    识别当前系统的操作系统和架构。
 
-    Returns:
-        str | None: A string representing the platform and architecture, or None if the platform/architecture could not be determined.
+    返回：
+        str | None: 表示平台和架构的字符串，如果无法确定平台/架构则返回None。
     """
     system = platform.system().lower()
     machine = platform.machine().lower()
 
+    # 根据系统和机器类型返回对应的平台架构
     if system == "linux":
         if machine == "x86_64":
             return "linux_x64"
@@ -38,14 +39,15 @@ async def _get_platform_arch() -> str | None:
 
 async def _format_arch(arch: str) -> str:
     """
-    Formats the platform architecture string to a more human-readable format.
+    将平台架构字符串格式化为更易读的格式。
 
-    Args:
-        arch (str): The platform architecture string to format.
+    参数：
+        arch (str): 要格式化的平台架构字符串。
 
-    Returns:
-        str: The formatted platform architecture string.
+    返回：
+        str: 格式化后的平台架构字符串。
     """
+    # 将内部使用的架构标识转换为更易读的格式
     if arch == "linux_x64":
         return "linux-x64"
     if arch == "linux_arm64":
@@ -60,14 +62,14 @@ async def _format_arch(arch: str) -> str:
 
 async def _has_file(binary_path: str, cody_agent_bin: str) -> bool:
     """
-    Checks if a file exists at the specified binary path and file name.
+    检查指定二进制路径和文件名是否存在文件。
 
-    Args:
-        binary_path (str): The path to the directory containing the file.
-        cody_agent_bin (str): The name of the file to check.
+    参数：
+        binary_path (str): 包含文件的目录路径。
+        cody_agent_bin (str): 要检查的文件名。
 
-    Returns:
-        bool: True if the file exists, False otherwise.
+    返回：
+        bool: 如果文件存在则返回True，否则返回False。
     """
     joined_path_and_file = os.path.join(binary_path, cody_agent_bin)
     return os.path.isfile(joined_path_and_file)
@@ -77,15 +79,15 @@ async def _check_for_binary_file(
     binary_path: str, cody_name: str, version: str
 ) -> bool:
     """
-    Checks if a binary file for the Cody agent exists at the specified path.
+    检查指定路径是否存在Cody代理的二进制文件。
 
-    Args:
-        binary_path (str): The path to the directory containing the Cody agent binary.
-        cody_name (str): The name of the Cody agent.
-        version (str): The version of the Cody agent.
+    参数：
+        binary_path (str): 包含Cody代理二进制文件的目录路径。
+        cody_name (str): Cody代理的名称。
+        version (str): Cody代理的版本。
 
-    Returns:
-        bool: True if the Cody agent binary file exists, False otherwise.
+    返回：
+        bool: 如果Cody代理二进制文件存在则返回True，否则返回False。
     """
     cody_agent = await _format_binary_name(cody_name, version)
     return await _has_file(binary_path, cody_agent)
@@ -93,14 +95,14 @@ async def _check_for_binary_file(
 
 async def _format_binary_name(cody_name: str, version: str) -> str:
     """
-    Formats the name of the Cody agent binary file.
+    格式化Cody代理二进制文件的名称。
 
-    Args:
-        cody_name (str): The name of the Cody agent.
-        version (str): The version of the Cody agent.
+    参数：
+        cody_name (str): Cody代理的名称。
+        version (str): Cody代理的版本。
 
-    Returns:
-        str: The formatted name of the Cody agent binary file.
+    返回：
+        str: 格式化后的Cody代理二进制文件名称。
     """
     arch = await _get_platform_arch()
     formatted_arch = await _format_arch(arch)
@@ -113,38 +115,39 @@ async def _download_binary_to_path(
     binary_path: str, cody_name: str, version: str
 ) -> bool:
     """
-    Downloads a binary file from a GitHub release to the specified path.
+    从GitHub发布页下载二进制文件到指定路径。
 
-    Args:
-        binary_path (str): The path to the directory where the binary file should be downloaded.
-        cody_name (str): The name of the binary file to download.
-        version (str): The version of the binary file to download.
+    参数：
+        binary_path (str): 二进制文件应下载到的目录路径。
+        cody_name (str): 要下载的二进制文件名称。
+        version (str): 要下载的二进制文件版本。
 
-    Returns:
-        None
+    返回：
+        bool: 下载成功返回True，失败返回False。
     """
     cody_agent = await _format_binary_name(cody_name, version)
     cody_binaray_path = os.path.join(binary_path, cody_agent)
 
+    download_url = f"https://github.com/sourcegraph/cody/releases/download/agent-v{version}/{cody_agent}"
+    print(f"Debug: Downloading from URL: {download_url}")
+
     async with aiohttp.ClientSession() as session:
-        async with session.get(
-            f"https://github.com/sourcegraph/cody/releases/download/agent-v{version}/{cody_agent}"
-        ) as response:
+        async with session.get(download_url) as response:
             if response.status != 200:
-                print(f"HTTP error occurred: {response.status}")
+                print(f"HTTP错误: {response.status}")
                 return False
 
             try:
                 async with aiofiles.open(cody_binaray_path, "wb") as f:
                     content = await response.read()
                     await f.write(content)
-                    print(f"Downloaded {cody_agent} to {binary_path}")
+                    print(f"已下载 {cody_agent} 到 {binary_path}")
 
-                    # set permission to chmod +x for the downloaded file
+                    # 为下载的文件设置执行权限 (chmod +x)
                     os.chmod(cody_binaray_path, 0o755)
                     return True
             except Exception as err:
-                print(f"Error occurred while writing the file: {err}")
+                print(f"写入文件时发生错误: {err}")
                 return False
 
 
@@ -154,10 +157,34 @@ async def get_remote_repositories(
     id: str,
     configs: Configs,
 ) -> Any:
+    """
+    获取远程仓库信息。
+
+    参数：
+        reader: 读取器对象。
+        writer: 写入器对象。
+        id (str): 请求标识符。
+        configs (Configs): 配置对象。
+
+    返回：
+        Any: 远程仓库信息。
+    """
     return await request_response("chat/remoteRepos", id, reader, writer, configs)
 
 
 async def receive_webviewmessage(reader, writer, params, configs: Configs) -> Any:
+    """
+    接收Webview消息。
+
+    参数：
+        reader: 读取器对象。
+        writer: 写入器对象。
+        params: 消息参数。
+        configs (Configs): 配置对象。
+
+    返回：
+        Any: Webview消息处理结果。
+    """
     return await request_response(
         "webview/receiveMessage",
         params,

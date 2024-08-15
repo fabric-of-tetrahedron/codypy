@@ -8,3 +8,4 @@ codypy.egg-info/
 **/tests
 .mypy_cache/
 /logs
+/.idea/

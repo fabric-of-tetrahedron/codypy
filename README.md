@@ -2,14 +2,12 @@
 
 **This is a WIP (work-in-progress) project** 🚧👷‍♂️
 
-
-`codypy` is a Python wrapper binding to Cody Agent through establishing a connection to the Cody-Agent server from [Sourcegraph Cody](https://github.com/sourcegraph/cody) using JSON-RPC (Remote Procedure Call) protocol over a TCP/stdio connection. It allows sending and receiving JSON-RPC messages asynchronously. 📨📥
+`codypy` is a Python wrapper binding to Cody Agent through establishing a connection to the Cody-Agent server from [Sourcegraph Cody](https://github.com/sourcegraph/cody) using JSON-RPC (Remote Procedure Call) protocol over a TCP/stdio
+connection. It allows sending and receiving JSON-RPC messages asynchronously. 📨📥
 
 **Note 1: You need to register an account at [Sourcegraph](https://sourcegraph.com/) and create an API key.**
 
 **Note 2: This project is currently in an experimental alpha stage. The API and functionality may change and break in future versions.** ⚠️🔧
-
-
 
 ## Features
 
@@ -28,6 +26,7 @@
 - The Cody Agent CLI binary will be downloaded automatically based on the OS and architecture from https://github.com/sourcegraph/cody/releases
 
 ## Installation
+
 ### Linux
 
 1. Clone the repository:
@@ -58,7 +57,8 @@
    pip install -r requirements.txt
    ```
 
-1. Rename the provided `env.example` file to `.env` and set the `SRC_ACCESS_TOKEN` value to your API key and the path `BINARY_PATH` to where the cody agent binary should be downloaded and accessed. Use the following command in Linux to rename your file:
+1. Rename the provided `env.example` file to `.env` and set the `SRC_ACCESS_TOKEN` value to your API key and the path `BINARY_PATH` to where the cody agent binary should be downloaded and accessed. Use the following command in Linux to
+   rename your file:
    ```
    mv env.example .env
    ```
@@ -84,7 +84,8 @@ You are now ready to use codypy!
 
 ## Usage as CLI tool
 
-If installed as a package like mentioned above, you can also use codypy as a CLI tool. Simply export `SRC_ACCESS_TOKEN` and `BINARY_PATH` to your environment and in the terminal execute `codypy-cli --help` to see the available options and flags.
+If installed as a package like mentioned above, you can also use codypy as a CLI tool. Simply export `SRC_ACCESS_TOKEN` and `BINARY_PATH` to your environment and in the terminal execute `codypy-cli --help` to see the available options and
+flags.
 
 ## Example
 
@@ -104,7 +105,6 @@ This example demonstrates how to use a complete cycle to establish a connection 
 - [ ] Implement support for including additional context about files and folders.
 - [x] Configure repository context.
 - [x] Show inferred context files from the conversation.
-
 
 ## License
 
