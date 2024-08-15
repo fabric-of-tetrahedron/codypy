@@ -61,11 +61,7 @@ class AgentSpecs(BaseModel):
     定义了代理的各种属性和配置。
     """
     name: str = "cody-agent"  # 代理名称
-    version: str = "0.0.5b"  # 代理版本
     workspaceRootUri: str | None = None  # 工作区根 URI
-
-    # @已弃用 使用 `workspaceRootUri` 代替。
-    workspaceRootPath: str | None = None  # 工作区根路径
 
     extensionConfiguration: ExtensionConfiguration | None = None  # 扩展配置
     capabilities: ClientCapabilities | None = None  # 客户端能力
@@ -76,7 +72,7 @@ class AgentSpecs(BaseModel):
     # marketingTracking: TelemetryEventMarketingTrackingInput = None
 
     def __init__(
-        self, name="cody-agent", version="0.0.5b", workspaceRootUri="", **data
+        self, name="cody-agent", workspaceRootUri="", **data
     ):
         """
         初始化 AgentSpecs 实例
@@ -87,11 +83,9 @@ class AgentSpecs(BaseModel):
         :param data: 其他数据
         """
         super().__init__(
-            name=name, version=version, workspaceRootUri=workspaceRootUri, **data
+            name=name, workspaceRootUri=workspaceRootUri, **data
         )
         self.name = name
-        self.version = version
-        self.workspaceRootPath = workspaceRootUri
 
 
 @dataclass

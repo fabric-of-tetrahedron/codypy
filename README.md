@@ -22,7 +22,7 @@
 
 - Python 3.7+
 - `asyncio` 库
-- Cody Agent CLI 二进制文件将根据操作系统和架构自动从 https://github.com/sourcegraph/cody/releases 下载
+- Cody Agent CLI 二进制文件将根据操作系统和架构自动从 <https://github.com/sourcegraph/cody/releases> 下载
 
 ## 安装
 
@@ -53,16 +53,19 @@ Cody CLI 是一个强大的命令行工具，可以在终端中使用 Cody 的�
 从 npm 安装 Cody CLI 的方法如下：
 
 1. 使用 npm 安装：
+
    ```shell
    npm install -g @sourcegraph/cody
    ```
 
 2. 或者，如果您使用 yarn：
+
    ```shell
    yarn global add @sourcegraph/cody
    ```
 
 3. 如果您使用 pnpm：
+
    ```shell
    pnpm install -g @sourcegraph/cody
    ```
@@ -75,26 +78,30 @@ Cody CLI 是一个强大的命令行工具，可以在终端中使用 Cody 的�
 cody help
 ```
 
-#### Windows
+### Windows下安装
 
 0. 安装Cody CLI
 
 1. 克隆该存储库：
+
    ```shell
-   git clone https://github.com/PriNova/codypy.git
+   git clone https://github.com/fabric-of-tetrahedron/codypy.git
    ```
 
 2. 进入项目目录：
+
    ```shell
    cd codypy
    ```
 
 3. 确保已安装 Python 3.7 或更高版本：
+
    ```shell
    python --version
    ```
 
 4. 安装 `setuptools`：
+
    ```shell
    pip install setuptools
    ```
@@ -102,17 +109,20 @@ cody help
 5. `asyncio` 库已包含在 Python 标准库中，因此无需额外安装。
 
 6. 创建并激活虚拟环境：
+
    ```shell
    python -m venv venv
    source venv/bin/activate
    ```
 
 7. 从 `requirements.txt` 文件安装依赖项：
+
    ```shell
    pip install -r requirements.txt
    ```
 
-8. 将提供的 `env.example` 文件重命名为 `.env`，并将 `SRC_ACCESS_TOKEN` 值设置为您的 API 密钥，将 `BINARY_PATH` 路径设置为应下载并访问 Cody Agent 二进制文件的位置。在 Linux 中使用以下命令重命名文件：
+8. 将提供的 `env.example` 文件重命名为 `.env`，并将 `SRC_ACCESS_TOKEN` 值设置为您的 API 密钥，将 `BINARY_PATH` 路径设置为应下载并访问 Cody CLI 二进制文件的位置。在 Linux 中使用以下命令重命名文件：
+
    ```shell
    mv env.example .env
    ```
@@ -142,7 +152,7 @@ cody help
 
 ## 示例
 
-有关初始化和聊天的示例，请参阅 [main.py](https://github.com/PriNova/codypy/blob/main/main.py) 文件。
+有关初始化和聊天的示例，请参阅 [main.py](https://github.com/fabric-of-tetrahedron/codypy/blob/main/main.py) 文件。
 
 该示例展示了如何使用完整的周期来建立与服务器的连接并处理 JSON-RPC 消息。
 

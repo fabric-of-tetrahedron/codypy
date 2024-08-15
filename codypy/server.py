@@ -59,8 +59,7 @@ class CodyServer:
     @classmethod
     async def init(
             cls,
-            binary_path: str,
-            version: str,
+            cody_binary_file: str,
             use_tcp: bool = False,  # 默认使用stdio，因为ca-certificate验证的原因
     ) -> "CodyServer":
         """
@@ -75,8 +74,7 @@ class CodyServer:
         CodyServer: 初始化后的CodyServer实例
         """
         # cody_binary = await _get_cody_binary(binary_path, version)
-        cody_binary = binary_path
-        cody_server = cls(cody_binary, use_tcp)
+        cody_server = cls(cody_binary_file, use_tcp)
         await cody_server._create_server_connection()
         return cody_server
     

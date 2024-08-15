@@ -72,7 +72,7 @@ async def chat(args):
     """
     # 初始化 CodyServer
     cody_server: CodyServer = await CodyServer.init(
-        binary_path=args.binary_path,
+        cody_binary_file=args.binary_path,
         version="0.0.5b",
     )
     # 创建 AgentSpecs 实例，指定工作空间根 URI 和扩展配置

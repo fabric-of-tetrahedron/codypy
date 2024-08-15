@@ -32,16 +32,14 @@ async def main():
     # 创建CodyServer实例并使用指定的二进制路径和调试模式初始化
     logger.info("--- 创建服务器连接 ---")
     cody_server: CodyServer = await CodyServer.init(
-        binary_path=BINARY_PATH,
-        version="0.0.5b",
+        cody_binary_file=BINARY_PATH,
     )
     
     # 创建AgentSpecs实例，指定工作空间根URI和扩展配置
     agent_specs = AgentSpecs(
-        workspaceRootUri="./",
+        # workspaceRootUri="./",  # 可以指定代码库路径，例如 "/home/prinova/CodeProjects/codypy"
         extensionConfiguration={
             "accessToken": SRC_ACCESS_TOKEN,
-            "codebase": "",  # 可以指定代码库路径，例如 "/home/prinova/CodeProjects/codypy"
             "customConfiguration": {},
         },
     )
@@ -60,7 +58,7 @@ async def main():
     logger.info("--- 创建新聊天 ---")
     await cody_agent.new_chat()
     
-    # 设置聊天模型为Claude3Sonnet
+    # 设置聊天模型为Gemini15Flash
     logger.info("--- 设置模型 ---")
     await cody_agent.set_model(model=Models.Gemini15Flash)
     
@@ -71,7 +69,7 @@ async def main():
     # 设置要使用的指定上下文文件
     context_file = append_paths(
         "./main.py",
-        "./codypy/logger.py", # 这个文件不存在
+        # "./codypy/logger.py", # 这个文件不存在
     )
     
     # 开始交互式聊天循环
