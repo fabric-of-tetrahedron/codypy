@@ -1,56 +1,3 @@
-以下是修改后的文档内容，包括“pip install setuptools”步骤：
-
-# 安装依赖项
-
-## 安装 Cody CLI
-
-Cody CLI 是一个强大的命令行工具，可以在终端中使用 Cody 的功能。本教程将指导您如何安装和使用 Cody CLI。
-
-### 注意事项
-
-- Cody CLI 目前处于实验阶段。
-- Cody CLI 使用与 Cody IDE 插件相同的技术，但可在命令行中使用。
-- 它可用于终端中的即兴探索或作为脚本的一部分来自动化工作流程。
-- Cody CLI 对免费、专业和企业用户都可用。
-- Cody CLI 仅适用于人类交互使用，其API使用模式与在编辑器中使用Cody类似。
-  - Cody免费/专业版用户：任何大量使用（如自动化后台处理）都**可能导致您的账户被封禁**。如有任何问题，请与我们联系。
-  - Cody企业版用户：请与您的内部Sourcegraph负责人和我们的团队联系，以获取使用建议，避免产生意外的LLM费用。
-
-### 前提条件
-
-在安装 Cody CLI 之前，请确保您的系统满足以下要求：
-
-- 已安装 Node.js `v20` 或更高版本
-  - <https://nodejs.org/>
-- 已安装 `npm`、`yarn`、`pnpm` 或等效的包管理器
-
-### 安装步骤
-
-从 npm 安装 Cody CLI 的方法如下：
-
-1. 使用 npm 安装：
-   ```shell
-   npm install -g @sourcegraph/cody
-   ```
-
-2. 或者，如果您使用 yarn：
-   ```shell
-   yarn global add @sourcegraph/cody
-   ```
-
-3. 如果您使用 pnpm：
-   ```shell
-   pnpm install -g @sourcegraph/cody
-   ```
-
-### 验证安装
-
-安装完成后，运行以下命令以确认安装成功：
-
-```shell
-cody help
-```
-
 # codypy 🐍🤖
 
 **This is a WIP (work-in-progress) project** 🚧👷‍♂️
@@ -79,7 +26,58 @@ cody help
 
 ## 安装
 
-### Linux
+### 安装 Cody CLI
+
+Cody CLI 是一个强大的命令行工具，可以在终端中使用 Cody 的功能。本教程将指导您如何安装和使用 Cody CLI。
+
+#### 注意事项
+
+- Cody CLI 目前处于实验阶段。
+- Cody CLI 使用与 Cody IDE 插件相同的技术，但可在命令行中使用。
+- 它可用于终端中的即兴探索或作为脚本的一部分来自动化工作流程。
+- Cody CLI 对免费、专业和企业用户都可用。
+- Cody CLI 仅适用于人类交互使用，其API使用模式与在编辑器中使用Cody类似。
+  - Cody免费/专业版用户：任何大量使用（如自动化后台处理）都**可能导致您的账户被封禁**。如有任何问题，请与我们联系。
+  - Cody企业版用户：请与您的内部Sourcegraph负责人和我们的团队联系，以获取使用建议，避免产生意外的LLM费用。
+
+#### 前提条件
+
+在安装 Cody CLI 之前，请确保您的系统满足以下要求：
+
+- 已安装 Node.js `v20` 或更高版本
+  - <https://nodejs.org/>
+- 已安装 `npm`、`yarn`、`pnpm` 或等效的包管理器
+
+#### 安装步骤
+
+从 npm 安装 Cody CLI 的方法如下：
+
+1. 使用 npm 安装：
+   ```shell
+   npm install -g @sourcegraph/cody
+   ```
+
+2. 或者，如果您使用 yarn：
+   ```shell
+   yarn global add @sourcegraph/cody
+   ```
+
+3. 如果您使用 pnpm：
+   ```shell
+   pnpm install -g @sourcegraph/cody
+   ```
+
+#### 验证安装
+
+安装完成后，运行以下命令以确认安装成功：
+
+```shell
+cody help
+```
+
+#### Windows
+
+0. 安装Cody CLI
 
 1. 克隆该存储库：
    ```shell

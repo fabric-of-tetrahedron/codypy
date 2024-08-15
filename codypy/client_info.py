@@ -113,21 +113,9 @@ class Models(Enum):
     
     定义了各种可用的模型及其规格。
     """
-    Claude2 = ModelSpec(
-        model_name="Claude 2.0",
-        model_id="anthropic/claude-2.0",
-    )
-    Claude2_1 = ModelSpec(
-        model_name="Claude 2.1",
-        model_id="anthropic/claude-2.1",
-    )
-    Claude1_2Instant = ModelSpec(
-        model_name="Claude Instant",
-        model_id="anthropic/claude-instant-1.2",
-    )
-    Claude3Haiku = ModelSpec(
-        model_name="Claude 3 Haiku",
-        model_id="anthropic/claude-3-haiku-20240307",
+    Claude35Sonnet = ModelSpec(
+        model_name="Claude 3.5 Sonnet",
+        model_id="anthropic/claude-3-5-sonnet-20240620",
     )
     Claude3Sonnet = ModelSpec(
         model_name="Claude 3 Sonnet",
@@ -137,19 +125,35 @@ class Models(Enum):
         model_name="Claude 3 Opus",
         model_id="anthropic/claude-3-opus-20240229",
     )
-    GPT35Turbo = ModelSpec(
-        model_name="GPT-3.5 Turbo",
-        model_id="openai/gpt-3.5-turbo",
+    Claude3Haiku = ModelSpec(
+        model_name="Claude 3 Haiku",
+        model_id="anthropic/claude-3-haiku-20240307",
+    )
+    GPT4o = ModelSpec(
+        model_name="GPT-4o",
+        model_id="openai/gpt-4o",
     )
     GPT4TurboPreview = ModelSpec(
         model_name="GPT-4 Turbo",
         model_id="openai/gpt-4-turbo",
     )
+    GPT35Turbo = ModelSpec(
+        model_name="GPT-3.5 Turbo",
+        model_id="openai/gpt-3.5-turbo",
+    )
+    Gemini15Pro = ModelSpec(
+        model_name="Gemini 1.5 Pro",
+        model_id="google/gemini-1.5-pro-latest",
+    )
+    Gemini15Flash = ModelSpec(
+        model_name="Gemini 1.5 Flash",
+        model_id="google/gemini-1.5-flash-latest",
+    )
     Mixtral8x7b = ModelSpec(
-        model_name="Mixtral 8x7b",
+        model_name="Mixtral 8x7B",
         model_id="fireworks/accounts/fireworks/models/mixtral-8x7b-instruct",
     )
     Mixtral8x22b = ModelSpec(
-        model_name="Mixtral 8x22b Preview",
-        model_id="fireworks/accounts/fireworks/models/mixtral-8x22b-instruct-preview",
+        model_name="Mixtral 8x22B",
+        model_id="fireworks/accounts/fireworks/models/mixtral-8x22b-instruct",
     )
