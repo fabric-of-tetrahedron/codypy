@@ -216,6 +216,7 @@ class CodyAgent:
         if context_files is None:
             context_files = []
         if message in ["/quit", "/bye", "/exit"]:
+            logger.debug("用户输入了退出命令，返回空响应")
             return "", []
 
         chat_message_request = {
@@ -228,6 +229,7 @@ class CodyAgent:
                 "contextFiles": context_files,
             },
         }
+        logger.debug(f"准备发送聊天消息请求：{chat_message_request}")
 
         result = await request_response(
             "chat/submitMessage",
@@ -235,12 +237,15 @@ class CodyAgent:
             self._cody_server._reader,
             self._cody_server._writer,
         )
+        logger.debug(f"收到聊天消息响应：{result}")
 
         (speaker, response, context_files_response) = await _show_last_message(
             result,
             show_context_files,
         )
+        logger.debug(f"解析响应结果：speaker={speaker}, response长度={len(response)}, context_files_response长度={len(context_files_response)}")
         if speaker == "" or response == "":
             logger.error("提交聊天消息失败: %s", result)
             return None
+        logger.debug("成功获取聊天响应，准备返回结果")
         return (response, context_files_response)

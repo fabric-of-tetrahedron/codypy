@@ -60,7 +60,7 @@ def append_paths(*paths: str) -> list[Context]:
 
         # 创建 Uri 对象
         uri = Uri()
-        uri.fsPath = path
+        uri.fsPath = os.path.abspath(path).replace('\\', '/')
         uri.path = path
 
         # 创建 Context 对象

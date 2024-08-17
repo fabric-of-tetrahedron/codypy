@@ -9,3 +9,4 @@ codypy.egg-info/
 .mypy_cache/
 /logs
 /.idea/
+/.run/
