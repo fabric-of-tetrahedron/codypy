@@ -59,8 +59,8 @@ async def main():
     await cody_agent.new_chat()
     
     # 设置聊天模型为Gemini15Flash
-    logger.info("--- 设置模型 ---")
-    await cody_agent.set_model(model=Models.Gemini15Flash)
+    # logger.info("--- 设置模型 ---")
+    # await cody_agent.set_model(model=Models.Gemini15Flash)
     
     # # 设置仓库上下文（仅限企业版用户）
     # logger.info("--- 设置上下文仓库 ---")

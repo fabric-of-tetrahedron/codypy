@@ -18,7 +18,7 @@ async def async_main():
         type=str,
         required=True,
         default=os.getenv("BINARY_PATH"),
-        help="Cody Agent 二进制文件的路径。（必需）",
+        help="Cody CLI 二进制文件的路径。（必需）",
     )
     
     parser.add_argument(
@@ -98,7 +98,7 @@ async def chat(args):
     )
     if response == "":
         return
-    print(response)
+    print("response="+response)
     
     # 清理服务器资源
     await cody_server.cleanup_server()

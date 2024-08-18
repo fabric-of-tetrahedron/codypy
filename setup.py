@@ -12,7 +12,7 @@ setup(
     # 版本号
     version="1.0.0",
     # 简短描述
-    description="一个Python包装器,通过TCP/stdio连接使用JSON-RPC协议与Sourcegraph Cody的Cody-Agent服务器建立连接。",
+    description="一个Python包装器,通过TCP/stdio连接使用JSON-RPC协议与Sourcegraph Cody的Cody CLI服务器建立连接。",
     # 长描述(从README.md读取)
     long_description=open("README.md").read(),
     # 长描述的内容类型

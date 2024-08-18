@@ -60,7 +60,7 @@ class AgentSpecs(BaseModel):
     
     定义了代理的各种属性和配置。
     """
-    name: str = "cody-agent"  # 代理名称
+    name: str = "cody"  # 代理名称
     workspaceRootUri: str | None = None  # 工作区根 URI
 
     extensionConfiguration: ExtensionConfiguration | None = None  # 扩展配置
@@ -72,7 +72,7 @@ class AgentSpecs(BaseModel):
     # marketingTracking: TelemetryEventMarketingTrackingInput = None
 
     def __init__(
-        self, name="cody-agent", workspaceRootUri="", **data
+        self, name="cody", workspaceRootUri="", **data
     ):
         """
         初始化 AgentSpecs 实例
