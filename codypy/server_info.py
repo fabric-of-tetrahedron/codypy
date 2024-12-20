@@ -1,4 +1,6 @@
 # 导入 pydantic 库中的 BaseModel 类
+from typing import Optional
+
 from pydantic import BaseModel
 
 
@@ -59,6 +61,7 @@ class AuthStatus(BaseModel):
     displayName: str | None = None
     avatarURL: str
     configOverwrites: CodyLLMSiteConfiguration | None = None
+    showInvalidAccessTokenError: Optional[bool] = False  # 添加这个字段，设置默认值为False
 
 
 # 定义 Cody 代理信息模型

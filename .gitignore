@@ -10,3 +10,4 @@ codypy.egg-info/
 /logs
 /.idea/
 /.run/
+/log/cody_agent_*.log

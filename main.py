@@ -25,7 +25,7 @@ async def main():
     """
     # 设置全局日志记录器
     logging.basicConfig(
-        level=logging.DEBUG,
+        level=logging.INFO,
         format="%(asctime)s - %(name)s - %(levelname)s - %(message)s",
     )
 
@@ -54,8 +54,12 @@ async def main():
     # 获取并打印可用的聊天模型
     logger.info("--- 获取聊天模型 ---")
     models = await cody_agent.get_models(model_type="chat")
-    logger.info("可用模型: %s", models)
-
+    logger.info("可用模型:")
+    for model in models["models"]:
+        logger.info("- %s (%s) by %s", model["title"], model["id"], model["provider"])
+        logger.info("  用途: %s", ", ".join(model["usage"]))
+        logger.info("  标签: %s", ", ".join(model["tags"]))
+        logger.info("")
     # 创建新的聊天会话
     logger.info("--- 创建新聊天 ---")
     await cody_agent.new_chat()

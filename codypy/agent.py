@@ -197,7 +197,7 @@ class CodyAgent:
     async def chat(
         self,
         message,
-        enhanced_context: bool = True,
+        enhanced_context: bool = False,
         show_context_files: bool = False,
         context_files=None,
     ):
@@ -206,7 +206,7 @@ class CodyAgent:
 
         参数:
             message (str): 要发送给 Cody 服务器的消息。
-            enhanced_context (bool, optional): 是否在聊天消息请求中包含增强上下文。默认为 True。
+            enhanced_context (bool, optional): 是否在聊天消息请求中包含增强上下文。默认为 False。
             show_context_files (bool, optional): 是否显示上下文文件。默认为 False。
             context_files (list, optional): 上下文文件列表。默认为 None。
 

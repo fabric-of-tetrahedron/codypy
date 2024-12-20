@@ -3,7 +3,7 @@ from dataclasses import dataclass
 from enum import Enum
 from typing import Dict, Literal
 
-from pydantic import BaseModel
+from pydantic import BaseModel, Field
 
 
 class ExtensionConfiguration(BaseModel):
@@ -17,7 +17,7 @@ class ExtensionConfiguration(BaseModel):
     codebase: str | None = None  # 代码库
     proxy: str | None = None  # 代理设置
 
-    customHeaders: Dict[str, str] = {}  # 自定义头部
+    customHeaders: Dict[str, str] = Field(default_factory=dict)  # 自定义头部
 
     # anonymousUserID 是记录遥测事件的重要组成部分。
     # 目前为了向后兼容是可选的，但在连接到 Agent 时强烈建议设置此项。
@@ -73,7 +73,7 @@ class AgentSpecs(BaseModel):
     # marketingTracking: TelemetryEventMarketingTrackingInput = None
 
     def __init__(
-        self, name="cody-agent", version="5.5.14", workspaceRootUri="", **data
+            self, name="cody-agent", version="5.5.14", workspaceRootUri="", **data
     ):
         """
         初始化 AgentSpecs 实例

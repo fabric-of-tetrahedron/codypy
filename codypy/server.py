@@ -1,4 +1,5 @@
 import asyncio
+import datetime
 import logging
 import os
 from asyncio.subprocess import Process
@@ -11,23 +12,6 @@ from codypy.messaging import _send_jsonrpc_request
 
 # 设置日志记录器
 logger = logging.getLogger(__name__)
-
-
-async def _get_cody_binary(binary_path: str, version: str) -> str:
-    print(f"Checking for Cody Agent binary at {binary_path}")
-    has_agent_binary = await _check_for_binary_file(binary_path, "cody-agent", version)
-    if not has_agent_binary:
-        logger.warning(
-            "Cody Agent binary does not exist at the specified path: %s", binary_path
-        )
-        logger.warning("Start downloading the Cody Agent binary")
-        is_completed = await _download_binary_to_path(
-            binary_path, "cody-agent", version
-        )
-        if not is_completed:
-            raise AgentBinaryDownloadError("Failed to download the Cody Agent binary")
-
-    return os.path.join(binary_path, await _format_binary_name("cody-agent", version))
 
 
 class CodyServer:
@@ -117,12 +101,16 @@ class CodyServer:
             binary = self.cody_binary
         args.append("api")
         args.append("jsonrpc-stdio")
+        log_filename = f"log/cody_agent_{datetime.datetime.now().strftime('%Y%m%d_%H%M%S')}.log"
+        # 确保日志目录存在
+        os.makedirs(os.path.dirname(log_filename), exist_ok=True)
+        log_file = open(log_filename, 'wb')
         self._process: Process = await asyncio.create_subprocess_exec(
             binary,
             *args,
             stdin=asyncio.subprocess.PIPE,
             stdout=asyncio.subprocess.PIPE,
-            env=os.environ,
+            stderr=log_file,
         )
         logger.info("创建了PID为%d的Cody代理进程", self._process.pid)
         self._reader = self._process.stdout
