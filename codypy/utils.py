@@ -59,7 +59,7 @@ async def _format_arch(arch: str) -> str:
         return "win-x64"
 
 
-async def _has_file(binary_path: str, cody_agent_bin: str) -> bool:
+async def _has_file(binary_path: str) -> bool:
     """
     Checks if a file exists at the specified binary path and file name.
 
@@ -70,12 +70,11 @@ async def _has_file(binary_path: str, cody_agent_bin: str) -> bool:
     Returns:
         bool: True if the file exists, False otherwise.
     """
-    joined_path_and_file = os.path.join(binary_path, cody_agent_bin)
-    return os.path.isfile(joined_path_and_file)
+    return os.path.isfile(binary_path)
 
 
 async def _check_for_binary_file(
-    binary_path: str, cody_name: str, version: str
+    binary_path: str
 ) -> bool:
     """
     Checks if a binary file for the Cody agent exists at the specified path.
@@ -88,8 +87,7 @@ async def _check_for_binary_file(
     Returns:
         bool: True if the Cody agent binary file exists, False otherwise.
     """
-    cody_agent = await _format_binary_name(cody_name, version)
-    return await _has_file(binary_path, cody_agent)
+    return await _has_file(binary_path)
 
 
 async def _format_binary_name(cody_name: str, version: str) -> str:
