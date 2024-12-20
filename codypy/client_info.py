@@ -73,7 +73,7 @@ class AgentSpecs(BaseModel):
     # marketingTracking: TelemetryEventMarketingTrackingInput = None
 
     def __init__(
-            self, name="cody-agent", version="5.5.14", workspaceRootUri="", **data
+            self, name="cody-agent", version="5.5.14", workspaceRootUri=None, **data
     ):
         """
         初始化 AgentSpecs 实例
