@@ -28,50 +28,52 @@ async def main():
         level=logging.DEBUG,
         format="%(asctime)s - %(name)s - %(levelname)s - %(message)s",
     )
-    
+
     # 创建CodyServer实例并使用指定的二进制路径和调试模式初始化
     logger.info("--- 创建服务器连接 ---")
     cody_server: CodyServer = await CodyServer.init(
         cody_binary_file=BINARY_PATH,
+        version="5.5.14",
     )
-    
+
     # 创建AgentSpecs实例，指定工作空间根URI和扩展配置
     agent_specs = AgentSpecs(
         # workspaceRootUri="./",  # 可以指定代码库路径，例如 "/home/prinova/CodeProjects/codypy"
         extensionConfiguration={
             "accessToken": SRC_ACCESS_TOKEN,
             "customConfiguration": {},
+            "cody.experimental.symf.enabled": False,
         },
     )
-    
+
     # 使用指定的agent_specs初始化CodyAgent
     logger.info("--- 初始化代理 ---")
     cody_agent: CodyAgent = CodyAgent(cody_server=cody_server, agent_specs=agent_specs)
     await cody_agent.initialize_agent()
-    
+
     # 获取并打印可用的聊天模型
     logger.info("--- 获取聊天模型 ---")
     models = await cody_agent.get_models(model_type="chat")
     logger.info("可用模型: %s", models)
-    
+
     # 创建新的聊天会话
     logger.info("--- 创建新聊天 ---")
     await cody_agent.new_chat()
-    
+
     # 设置聊天模型为Gemini15Flash
     # logger.info("--- 设置模型 ---")
     # await cody_agent.set_model(model=Models.Gemini15Flash)
-    
+
     # # 设置仓库上下文（仅限企业版用户）
     # logger.info("--- 设置上下文仓库 ---")
     # await cody_agent.set_context_repo(repos=["github.com/fabric-of-tetrahedron/codypy"])
-    
+
     # 设置要使用的指定上下文文件
     context_file = append_paths(
         "./main.py",
         # "./codypy/logger.py", # 这个文件不存在
     )
-    
+
     # 开始交互式聊天循环
     logger.info("--- 发送消息（简短） ---")
     while True:
@@ -85,7 +87,7 @@ async def main():
         if response == "":
             break
         print(f"{BLUE}助手{RESET}: {response}\n")
-        
+
         # 打印上下文文件信息
         logger.info("--- 上下文文件 ---")
         if context_files_response:
@@ -93,7 +95,7 @@ async def main():
                 logger.info("文件: %s", context)
         else:
             logger.info("无上下文文件")
-    
+
     # 清理服务器并返回None
     await cody_server.cleanup_server()
     return None

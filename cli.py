@@ -20,7 +20,7 @@ async def async_main():
         default=os.getenv("BINARY_PATH"),
         help="Cody CLI 二进制文件的路径。（必需）",
     )
-    
+
     parser.add_argument(
         "--access_token",
         type=str,
@@ -41,7 +41,7 @@ async def async_main():
         default=os.path.abspath(os.getcwd()),
         help=f"当前工作目录。默认值={os.path.abspath(os.getcwd())}",
     )
-    
+
     parser.add_argument(
         "-ec",
         "--enhanced-context",
@@ -56,7 +56,7 @@ async def async_main():
         default=False,
         help="显示从消息中推断的上下文文件（如果有）。默认值=True",
     )
-    
+
     # 解析命令行参数
     args = parser.parse_args()
     # 调用聊天函数
@@ -73,7 +73,7 @@ async def chat(args):
     # 初始化 CodyServer
     cody_server: CodyServer = await CodyServer.init(
         cody_binary_file=args.binary_path,
-        version="0.0.5b",
+        version="5.5.14",
     )
     # 创建 AgentSpecs 实例，指定工作空间根 URI 和扩展配置
     agent_specs = AgentSpecs(
@@ -86,10 +86,10 @@ async def chat(args):
     )
     # 初始化 CodyAgent
     cody_agent: CodyAgent = await cody_server.initialize_agent(agent_specs=agent_specs)
-    
+
     # 创建新的聊天会话
     await cody_agent.new_chat()
-    
+
     # 发送聊天消息并获取响应
     response = await cody_agent.chat(
         message=args.message,
@@ -99,7 +99,7 @@ async def chat(args):
     if response == "":
         return
     print("response="+response)
-    
+
     # 清理服务器资源
     await cody_server.cleanup_server()
     return None

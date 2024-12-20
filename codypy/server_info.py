@@ -47,21 +47,18 @@ class AuthStatus(BaseModel):
     - avatarURL: 头像 URL
     - configOverwrites: Cody LLM 站点配置覆盖
     """
-    endpoint: str  # 端点 URL
-    isDotCom: bool  # 是否为 .com 域名
-    isLoggedIn: bool  # 是否已登录
-    showInvalidAccessTokenError: bool  # 是否显示无效访问令牌错误
-    authenticated: bool  # 是否已认证
-    hasVerifiedEmail: bool  # 是否有已验证的电子邮件
-    requiresVerifiedEmail: bool  # 是否需要验证电子邮件
-    siteHasCodyEnabled: bool  # 站点是否启用了 Cody
-    siteVersion: str  # 站点版本
-    userCanUpgrade: bool  # 用户是否可以升级
-    username: str  # 用户名
-    primaryEmail: str  # 主要电子邮件地址
-    displayName: str | None = None  # 显示名称，可为空
-    avatarURL: str  # 头像 URL
-    configOverwrites: CodyLLMSiteConfiguration | None = None  # Cody LLM 站点配置覆盖，可为空
+    endpoint: str
+    showInvalidAccessTokenError: bool
+    authenticated: bool
+    hasVerifiedEmail: bool
+    requiresVerifiedEmail: bool
+    siteVersion: str
+    userCanUpgrade: bool
+    username: str
+    primaryEmail: str
+    displayName: str | None = None
+    avatarURL: str
+    configOverwrites: CodyLLMSiteConfiguration | None = None
 
 
 # 定义 Cody 代理信息模型

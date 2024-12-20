@@ -13,15 +13,33 @@ from codypy.messaging import _send_jsonrpc_request
 logger = logging.getLogger(__name__)
 
 
+async def _get_cody_binary(binary_path: str, version: str) -> str:
+    print(f"Checking for Cody Agent binary at {binary_path}")
+    has_agent_binary = await _check_for_binary_file(binary_path, "cody-agent", version)
+    if not has_agent_binary:
+        logger.warning(
+            "Cody Agent binary does not exist at the specified path: %s", binary_path
+        )
+        logger.warning("Start downloading the Cody Agent binary")
+        is_completed = await _download_binary_to_path(
+            binary_path, "cody-agent", version
+        )
+        if not is_completed:
+            raise AgentBinaryDownloadError("Failed to download the Cody Agent binary")
+
+    return os.path.join(binary_path, await _format_binary_name("cody-agent", version))
+
+
 class CodyServer:
     """
     Cody服务器类，用于管理与Cody代理的连接和通信。
     """
-    
+
     @classmethod
     async def init(
             cls,
             cody_binary_file: str,
+            version: str,
             use_tcp: bool = False,  # 默认使用stdio，因为ca-certificate验证的原因
     ) -> "CodyServer":
         """
@@ -39,7 +57,7 @@ class CodyServer:
         cody_server = cls(cody_binary_file, use_tcp)
         await cody_server._create_server_connection()
         return cody_server
-    
+
     def __init__(self, cody_binary: str, use_tcp: bool) -> None:
         """
         初始化CodyServer实例。
@@ -53,7 +71,7 @@ class CodyServer:
         self._process: Process | None = None
         self._reader: asyncio.StreamReader | None = None
         self._writer: asyncio.StreamWriter | None = None
-    
+
     async def _create_server_connection(
             self, test_against_node_source: bool = False
     ) -> None:
@@ -78,29 +96,27 @@ class CodyServer:
                 "Cody代理二进制文件路径为空。您需要指定BINARY_PATH为代理二进制文件"
                 "或index.js文件的绝对路径。"
             )
-        
+
         # 设置调试相关的环境变量
         debug = logger.getEffectiveLevel() == logging.DEBUG
         os.environ["CODY_AGENT_DEBUG_REMOTE"] = str(self.use_tcp).lower()
         os.environ["CODY_DEBUG"] = str(debug).lower()
-        
+
         # 准备启动参数
         args = []
         binary = ""
-        # if test_against_node_source:
-        #     binary = "node"
-        #     args.extend(
-        #         (
-        #             "--enable-source-maps",
-        #             "/home/prinova/CodeProjects/cody/agent/dist/index.js",
-        #         )
-        #     )
-        # else:
-        binary = self.cody_binary
+        if test_against_node_source:
+            binary = "node"
+            args.extend(
+                (
+                    "--enable-source-maps",
+                    "/home/prinova/CodeProjects/cody/agent/dist/index.js",
+                )
+            )
+        else:
+            binary = self.cody_binary
         args.append("api")
         args.append("jsonrpc-stdio")
-        
-        # 创建子进程
         self._process: Process = await asyncio.create_subprocess_exec(
             binary,
             *args,
@@ -111,7 +127,7 @@ class CodyServer:
         logger.info("创建了PID为%d的Cody代理进程", self._process.pid)
         self._reader = self._process.stdout
         self._writer = self._process.stdin
-        
+
         if not self.use_tcp:
             logger.info("已创建与Cody代理的stdio连接")
         else:
@@ -120,7 +136,7 @@ class CodyServer:
             retry_attempts: int = 5
             # TODO: 考虑使这些参数可配置
             host: str = "localhost"
-            port: int = 31132
+            port: int = 3113
             for retry in range(retry_attempts):
                 try:
                     (self._reader, self._writer) = await asyncio.open_connection(
@@ -154,7 +170,7 @@ class CodyServer:
                             port,
                             retry,
                         )
-    
+
     async def cleanup_server(self):
         """
         清理服务器连接。

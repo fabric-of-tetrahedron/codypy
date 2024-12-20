@@ -9,7 +9,7 @@ from pydantic import BaseModel
 class ExtensionConfiguration(BaseModel):
     """
     扩展配置类
-    
+
     这个类定义了扩展的各种配置选项，包括访问令牌、服务器端点、代码库等。
     """
     accessToken: str = ""  # 访问令牌
@@ -39,7 +39,7 @@ class ExtensionConfiguration(BaseModel):
 class ClientCapabilities(BaseModel):
     """
     客户端能力类
-    
+
     定义了客户端支持的各种功能和能力。
     """
     completions: Literal["none"] = "none"  # 自动完成功能
@@ -57,10 +57,11 @@ class ClientCapabilities(BaseModel):
 class AgentSpecs(BaseModel):
     """
     代理规格类
-    
+
     定义了代理的各种属性和配置。
     """
-    name: str = "cody"  # 代理名称
+    name: str = "cody-agent"
+    version: str = "5.5.14"
     workspaceRootUri: str | None = None  # 工作区根 URI
 
     extensionConfiguration: ExtensionConfiguration | None = None  # 扩展配置
@@ -72,11 +73,11 @@ class AgentSpecs(BaseModel):
     # marketingTracking: TelemetryEventMarketingTrackingInput = None
 
     def __init__(
-        self, name="cody", workspaceRootUri="", **data
+        self, name="cody-agent", version="5.5.14", workspaceRootUri="", **data
     ):
         """
         初始化 AgentSpecs 实例
-        
+
         :param name: 代理名称
         :param version: 代理版本
         :param workspaceRootUri: 工作区根 URI
@@ -92,7 +93,7 @@ class AgentSpecs(BaseModel):
 class ModelSpec:
     """
     模型规格类
-    
+
     定义了模型的各种属性。
     """
     model_name: str = ""  # 模型名称
@@ -104,7 +105,7 @@ class ModelSpec:
 class Models(Enum):
     """
     模型枚举类
-    
+
     定义了各种可用的模型及其规格。
     """
     Claude35Sonnet = ModelSpec(
